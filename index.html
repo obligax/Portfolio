@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Hello | Aspiring Engineer</title>
-<meta name="description" content="Hello, honors graduate with a 4.0 GPA, two-time first place pianist and student athlete, aiming to become an engineer.">
-<meta property="og:title" content="Hello | Aspiring Engineer">
+<title>gab | Aspiring Engineer</title>
+<meta name="description" content="gab, honors graduate with a 4.0 GPA, two-time first place pianist and student athlete, aiming to become an engineer.">
+<meta property="og:title" content="gab | Aspiring Engineer">
 <meta property="og:description" content="Honors graduate, 4.0 GPA, two-time piano champion, multi-sport athlete. Building toward a career in engineering.">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#0f1b2d">
@@ -86,6 +86,16 @@ nav ul a:hover{color:var(--accent)}
 .contact p{color:#cfd9ea;margin-bottom:1.5rem}
 footer{background:var(--ink);color:#8697b3;font-size:.9rem;padding:0 0 2rem}
 
+/* music player */
+.player{position:fixed;left:50%;bottom:1rem;transform:translateX(-50%);z-index:10;display:flex;align-items:center;gap:.75rem;width:min(30rem,calc(100% - 1.5rem));padding:.6rem .9rem;background:var(--ink);color:var(--white);border:1px solid #2a3b57;border-radius:999px;box-shadow:0 8px 24px rgba(15,27,45,.35)}
+.player button{flex:none;width:2.6rem;height:2.6rem;border-radius:50%;border:0;background:var(--accent);color:var(--white);font-size:1rem;cursor:pointer;display:grid;place-items:center}
+.player button:hover{background:#3b72ff}
+.player .meta{flex:1;min-width:0}
+.player .title{font-size:.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.player input[type=range]{width:100%;accent-color:var(--accent);height:1rem;cursor:pointer}
+.player .time{flex:none;font-size:.78rem;color:#9fb0cc;font-variant-numeric:tabular-nums}
+footer{padding-bottom:5.5rem}
+
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 </style>
 </head>
@@ -93,7 +103,7 @@ footer{background:var(--ink);color:#8697b3;font-size:.9rem;padding:0 0 2rem}
 
 <header>
   <nav aria-label="Main">
-    <a class="logo" href="#top">Hello</a>
+    <a class="logo" href="#top">gab</a>
     <ul>
       <li><a href="#about">About</a></li>
       <li><a href="#achievements">Achievements</a></li>
@@ -112,10 +122,11 @@ footer{background:var(--ink);color:#8697b3;font-size:.9rem;padding:0 0 2rem}
     <img src="./static/img/minecraft.gif" alt="Minecraft Animation">
     <img src="./static/img/minecraft.gif" alt="Minecraft Animation">
 </div>
+
 <main id="top">
   <div class="hero">
     <div class="wrap">
-      <h1>Hello</h1>
+      <h1>gab</h1>
       <p class="role">Honors graduate with a 4.0 GPA, working toward a career as an engineer.</p>
       <div class="cta">
         <a class="btn primary" href="#contact">Get in touch</a>
@@ -132,7 +143,7 @@ footer{background:var(--ink);color:#8697b3;font-size:.9rem;padding:0 0 2rem}
     <div class="wrap grid">
       <div>
         <h2>About me</h2>
-        <p>I'm Hello, a recent graduate of Victory Life Christian School. I finished with honors and a 4.0 GPA, and my goal is to become an engineer.</p>
+        <p>I'm gab, a recent graduate of Victory Life Christian School. I finished with honors and a 4.0 GPA, and my goal is to become an engineer.</p>
         <p style="margin-top:1rem">Piano and team sports taught me how to practice consistently, perform under pressure, and work with others. I want to bring that same approach to engineering, and I'm looking to connect with engineers, mentors and programs that can help me get there.</p>
       </div>
       <div class="facts">
@@ -186,13 +197,25 @@ footer{background:var(--ink);color:#8697b3;font-size:.9rem;padding:0 0 2rem}
     <div class="wrap">
       <h2>Let's connect</h2>
       <p>I'm open to mentorship, internships, shadowing and conversations with people in engineering. Send me a message.</p>
-      <a class="btn primary" href="mailto:YOUR_EMAIL@example.com">Email Hello</a>
+      <a class="btn primary" href="mailto:YOUR_EMAIL@example.com">Email gab</a>
       <a class="btn ghost" href="https://www.linkedin.com/in/YOUR-PROFILE" rel="noopener" target="_blank" style="margin-left:.5rem">LinkedIn</a>
     </div>
   </section>
 </main>
 
-<footer><div class="wrap">&copy; <span id="yr"></span> Hello</div></footer>
+<footer><div class="wrap">&copy; <span id="yr"></span> gab</div></footer>
+
+
+<div class="player" role="group" aria-label="Music player">
+  <!-- Added autoplay and kept loop -->
+  <audio id="audio" src="./static/music/tf_nemesis.mp3" preload="metadata" autoplay loop></audio>
+  <button type="button" id="pp" aria-label="Play music">▶</button>
+  <div class="meta">
+    <div class="title">tf_nemesis</div>
+    <input type="range" id="seek" min="0" max="100" value="0" step="0.1" aria-label="Seek">
+  </div>
+  <span class="time" id="time">0:00</span>
+</div>
 
 <script>
 document.getElementById('yr').textContent=new Date().getFullYear();
@@ -221,6 +244,20 @@ document.getElementById('yr').textContent=new Date().getFullYear();
   }
   white.forEach(function(w){make('',w[0],w[1])});
   black.forEach(function(k){make('black','sharp note',k[1],k[0]/8*100)});
+})();
+
+(function(){
+  var a=document.getElementById('audio'),pp=document.getElementById('pp'),
+      seek=document.getElementById('seek'),tm=document.getElementById('time');
+  function fmt(t){t=Math.floor(t||0);return Math.floor(t/60)+':'+('0'+t%60).slice(-2)}
+  pp.addEventListener('click',function(){a.paused?a.play().catch(function(){}):a.pause()});
+  a.addEventListener('play',function(){pp.innerHTML='&#10074;&#10074;';pp.setAttribute('aria-label','Pause music')});
+  a.addEventListener('pause',function(){pp.innerHTML='&#9654;';pp.setAttribute('aria-label','Play music')});
+  a.addEventListener('timeupdate',function(){
+    if(a.duration)seek.value=a.currentTime/a.duration*100;
+    tm.textContent=fmt(a.currentTime)+(a.duration?' / '+fmt(a.duration):'');
+  });
+  seek.addEventListener('input',function(){if(a.duration)a.currentTime=seek.value/100*a.duration});
 })();
 </script>
 </body>
