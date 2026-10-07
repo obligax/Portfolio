@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kyrie | Aspiring Engineer</title>
+<meta name="description" content="Kyrie, honors graduate with a 4.0 GPA, two-time first place pianist and student athlete, aiming to become an engineer.">
+<meta property="og:title" content="Kyrie | Aspiring Engineer">
+<meta property="og:description" content="Honors graduate, 4.0 GPA, two-time piano champion, multi-sport athlete. Building toward a career in engineering.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0f1b2d">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0f1b2d; --muted:#4d5b70; --paper:#f4f7fb; --white:#fff;
+  --line:#d5dde8; --accent:#1f5bff; --accent-soft:#e3ebff;
+  --font:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);color:var(--ink);background:var(--paper);line-height:1.6;font-size:1.0625rem}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.wrap{max-width:62rem;margin:0 auto;padding:0 1.25rem}
+section{padding:4.5rem 0}
+h1,h2,h3{line-height:1.1;letter-spacing:-.02em}
+h2{font-size:clamp(1.75rem,4vw,2.5rem);font-weight:800;margin-bottom:1.5rem}
+p{max-width:62ch}
+
+/* nav */
+header{position:sticky;top:0;z-index:5;background:rgba(244,247,251,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.75rem 1.25rem;max-width:62rem;margin:0 auto}
+nav .logo{font-weight:800;text-decoration:none;font-size:1.2rem}
+nav ul{display:flex;gap:1.25rem;list-style:none;font-size:.95rem}
+nav ul a{text-decoration:none;color:var(--muted);font-weight:600}
+nav ul a:hover{color:var(--accent)}
+@media(max-width:560px){nav ul li:nth-child(-n+2){display:none}}
+
+/* hero */
+.hero{background:var(--ink);color:var(--white);padding:5rem 0 0;overflow:hidden}
+.hero h1{font-size:clamp(3.5rem,14vw,9rem);font-weight:800;letter-spacing:-.04em}
+.hero .role{font-size:clamp(1.15rem,2.6vw,1.6rem);margin-top:1rem;max-width:34ch;color:#cfd9ea}
+.cta{display:flex;flex-wrap:wrap;gap:.75rem;margin:2rem 0 3rem}
+.btn{display:inline-block;padding:.8rem 1.4rem;border-radius:.5rem;font-weight:600;text-decoration:none;border:2px solid var(--white)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--white)}
+.btn.primary:hover{background:#3b72ff}
+.btn.ghost:hover{background:var(--white);color:var(--ink)}
+
+/* piano */
+.piano-note{font-size:.95rem;color:#9fb0cc;margin-bottom:.75rem}
+.piano{position:relative;display:flex;height:9rem;max-width:62rem;margin:0 auto;padding:0 1.25rem}
+.piano-inner{position:relative;display:flex;width:100%}
+.key{flex:1;border:1px solid #9aa7bd;border-top:0;background:var(--white);border-radius:0 0 .45rem .45rem;cursor:pointer;transition:background .08s}
+.key:active,.key.on{background:var(--accent-soft)}
+.key.black{position:absolute;top:0;width:8%;height:58%;background:var(--ink);border:1px solid #000;border-top:0;z-index:2;transform:translateX(-50%)}
+.key.black:active,.key.black.on{background:var(--accent)}
+
+/* about */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem}
+@media(max-width:760px){.grid{grid-template-columns:1fr;gap:1.5rem}}
+.facts{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+.fact{background:var(--white);border:1px solid var(--line);border-radius:.6rem;padding:1.1rem}
+.fact b{display:block;font-size:2rem;font-weight:800;color:var(--accent);line-height:1.1}
+.fact span{font-size:.92rem;color:var(--muted)}
+
+/* achievements */
+.alt{background:var(--white);border-block:1px solid var(--line)}
+.ach{list-style:none}
+.ach li{display:grid;grid-template-columns:7.5rem 1fr;gap:1.25rem;padding:1.4rem 0;border-top:1px solid var(--line)}
+.ach li:last-child{border-bottom:1px solid var(--line)}
+.ach .when{font-weight:800;color:var(--accent)}
+.ach h3{font-size:1.25rem;margin-bottom:.25rem}
+.ach p{color:var(--muted)}
+@media(max-width:560px){.ach li{grid-template-columns:1fr;gap:.25rem}}
+
+/* strengths */
+.strengths{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+@media(max-width:760px){.strengths{grid-template-columns:1fr}}
+.strengths h3{font-size:1.2rem;margin-bottom:.4rem}
+.strengths p{color:var(--muted)}
+
+/* contact */
+.contact{background:var(--ink);color:var(--white)}
+.contact p{color:#cfd9ea;margin-bottom:1.5rem}
+footer{background:var(--ink);color:#8697b3;font-size:.9rem;padding:0 0 2rem}
+
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <nav aria-label="Main">
+    <a class="logo" href="#top">GNCO</a>
+    <ul>
+      <li><a href="#about">About</a></li>
+      <li><a href="#achievements">Achievements</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main id="top">
+  <div class="hero">
+    <div class="wrap">
+      <h1>Kyrie</h1>
+      <p class="role">Honors graduate with a 4.0 GPA, working toward a career as an engineer.</p>
+      <div class="cta">
+        <a class="btn primary" href="#contact">Get in touch</a>
+        <a class="btn ghost" href="#achievements">See my achievements</a>
+      </div>
+      <p class="piano-note">I play piano. Tap or click the keys.</p>
+    </div>
+    <div class="piano" role="group" aria-label="Playable piano keyboard">
+      <div class="piano-inner" id="piano"></div>
+    </div>
+  </div>
+
+  <section id="about">
+    <div class="wrap grid">
+      <div>
+        <h2>About me</h2>
+        <p>I'm GNCO, a recent graduate of Victory Life Christian School. I finished with honors and a 4.0 GPA, and my goal is to become an engineer.</p>
+        <p style="margin-top:1rem">Piano and team sports taught me how to practice consistently, perform under pressure, and work with others. I want to bring that same approach to engineering, and I'm looking to connect with engineers, mentors and programs that can help me get there.</p>
+      </div>
+      <div class="facts">
+        <div class="fact"><b>4.0</b><span>GPA</span></div>
+        <div class="fact"><b>Honors</b><span>High school diploma</span></div>
+        <div class="fact"><b>2x</b><span>1st place in piano</span></div>
+        <div class="fact"><b>2</b><span>Team sports: basketball and football</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="achievements" class="alt">
+    <div class="wrap">
+      <h2>Achievements</h2>
+      <ul class="ach">
+        <li>
+          <div class="when">Graduated</div>
+          <div><h3>High school diploma with honors</h3><p>Victory Life Christian School, finishing with a 4.0 GPA.</p></div>
+        </li>
+        <li>
+          <div class="when">2025, 2026</div>
+          <div><h3>1st place in piano</h3><p>Won first place two years in a row.</p></div>
+        </li>
+        <li>
+          <div class="when">Athletics</div>
+          <div><h3>Basketball and football</h3><p>Competed on basketball and football teams.</p></div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="experience">
+    <div class="wrap">
+      <h2>Experience</h2>
+      <ul class="ach" style="margin-bottom:3rem">
+        <li>
+          <div class="when">1 month</div>
+          <div><h3>Part-time at Six Hands</h3><p>Worked part-time, building real-world work experience.</p></div>
+        </li>
+      </ul>
+      <h2>What I bring</h2>
+      <div class="strengths">
+        <div><h3>Discipline</h3><p>Two piano titles and a 4.0 GPA come from steady, focused practice.</p></div>
+        <div><h3>Teamwork</h3><p>Basketball and football taught me to communicate and rely on others.</p></div>
+        <div><h3>Drive to learn</h3><p>I'm ready to start my engineering journey and keep building new skills.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="contact">
+    <div class="wrap">
+      <h2>Let's connect</h2>
+      <p>I'm open to mentorship, internships, shadowing and conversations with people in engineering. Send me a message.</p>
+      <a class="btn primary" href="mailto:YOUR_EMAIL@example.com">Email Kyrie</a>
+      <a class="btn ghost" href="https://www.linkedin.com/in/YOUR-PROFILE" rel="noopener" target="_blank" style="margin-left:.5rem">LinkedIn</a>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap">&copy; <span id="yr"></span> Kyrie</div></footer>
+
+<script>
+document.getElementById('yr').textContent=new Date().getFullYear();
+(function(){
+  var white=[['C',261.63],['D',293.66],['E',329.63],['F',349.23],['G',392],['A',440],['B',493.88],['C',523.25]];
+  var black=[[1,277.18],[2,311.13],[4,369.99],[5,415.3],[6,466.16]];
+  var box=document.getElementById('piano'),ctx;
+  function play(f,el){
+    try{
+      ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();
+      if(ctx.state==='suspended')ctx.resume();
+      var o=ctx.createOscillator(),g=ctx.createGain(),t=ctx.currentTime;
+      o.type='triangle';o.frequency.value=f;
+      g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.35,t+.01);
+      g.gain.exponentialRampToValueAtTime(.0001,t+1.2);
+      o.connect(g);g.connect(ctx.destination);o.start(t);o.stop(t+1.25);
+    }catch(e){}
+    el.classList.add('on');setTimeout(function(){el.classList.remove('on')},150);
+  }
+  function make(cls,label,f,left){
+    var b=document.createElement('button');
+    b.type='button';b.className='key '+cls;b.setAttribute('aria-label','Play '+label);
+    if(left!==undefined)b.style.left=left+'%';
+    b.addEventListener('click',function(){play(f,b)});
+    box.appendChild(b);
+  }
+  white.forEach(function(w){make('',w[0],w[1])});
+  black.forEach(function(k){make('black','sharp note',k[1],k[0]/8*100)});
+})();
+</script>
+</body>
+</html>
