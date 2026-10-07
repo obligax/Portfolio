@@ -97,6 +97,28 @@ footer{background:var(--ink);color:#8697b3;font-size:.9rem;padding:0 0 2rem}
 footer{padding-bottom:5.5rem}
 
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+
+/* game */
+.game-section{background:#080d18;color:#fff;border-top:1px solid #1b2940}
+.game-wrap{max-width:62rem;margin:0 auto;padding:0 1.25rem}
+.game-head{display:flex;justify-content:space-between;gap:1rem;align-items:end;flex-wrap:wrap;margin-bottom:1.25rem}
+.game-kicker{color:#8ea4c6;font-size:.9rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.game-title{font-size:clamp(2rem,6vw,3.2rem);margin-top:.25rem}
+.game-copy{color:#aebdd2;max-width:48rem}
+.game-ui{display:grid;grid-template-columns:1fr 18rem;gap:1rem;align-items:start}
+.game-card{background:#0f1727;border:1px solid #243650;border-radius:1rem;padding:1rem}
+.game-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.55rem;margin-bottom:.75rem}
+.gstat{background:#121e31;border:1px solid #22334d;border-radius:.65rem;padding:.55rem;min-width:0}
+.gstat b{display:block;font-size:1.1rem}.gstat span{font-size:.72rem;color:#8ea4c6}
+#gameCanvas{display:block;width:100%;aspect-ratio:16/10;background:#070b13;border:1px solid #263955;border-radius:.8rem;touch-action:none}
+.game-actions{display:flex;gap:.55rem;flex-wrap:wrap;margin-top:.75rem}
+.game-btn{min-height:44px;border:1px solid #385070;background:#17243a;color:#fff;border-radius:.6rem;padding:.65rem .9rem;font:inherit;font-weight:700;cursor:pointer}
+.game-btn.primary{background:var(--accent);border-color:var(--accent)}
+.game-btn:disabled{opacity:.45;cursor:not-allowed}
+.upgrades{display:grid;gap:.55rem}.upgrade{width:100%;text-align:left;background:#121e31;color:#fff;border:1px solid #293d5a;border-radius:.7rem;padding:.75rem;cursor:pointer}.upgrade strong{display:block}.upgrade small{display:block;color:#91a5c3;margin-top:.15rem}.upgrade:hover:not(:disabled){border-color:#5e83bb}
+.game-help{font-size:.85rem;color:#91a5c3;margin-top:.7rem}
+@media(max-width:760px){.game-ui{grid-template-columns:1fr}.game-stats{grid-template-columns:repeat(2,1fr)}.game-card{padding:.75rem}}
 </style>
 </head>
 <body>
@@ -109,6 +131,7 @@ footer{padding-bottom:5.5rem}
       <li><a href="#achievements">Achievements</a></li>
       <li><a href="#experience">Experience</a></li>
       <li><a href="#contact">Contact</a></li>
+      <li><a href="#game">Game</a></li>
     </ul>
   </nav>
 </header>
@@ -206,6 +229,38 @@ footer{padding-bottom:5.5rem}
   </section>
 </main>
 
+
+
+<section id="game" class="game-section">
+  <div class="game-wrap">
+    <div class="game-head">
+      <div><div class="game-kicker">Arcade lab</div><h2 class="game-title">VOID RUNNER</h2></div>
+      <p class="game-copy">Survive endless waves, collect shards, build a ridiculous upgrade stack, and chase a higher score every run. Desktop: WASD / arrows. Mobile: drag the ship.</p>
+    </div>
+    <div class="game-ui">
+      <div class="game-card">
+        <div class="game-stats">
+          <div class="gstat"><b id="gScore">0</b><span>SCORE</span></div><div class="gstat"><b id="gWave">1</b><span>WAVE</span></div><div class="gstat"><b id="gShards">0</b><span>SHARDS</span></div><div class="gstat"><b id="gBest">0</b><span>BEST</span></div>
+        </div>
+        <canvas id="gameCanvas" width="960" height="600" aria-label="Void Runner game"></canvas>
+        <div class="game-actions"><button class="game-btn primary" id="startGame" type="button">Start run</button><button class="game-btn" id="pauseGame" type="button" disabled>Pause</button><button class="game-btn" id="resetGame" type="button">Reset</button></div>
+        <p class="game-help" id="gameStatus" aria-live="polite">Survive. Collect blue shards. Don't touch the red hunters.</p>
+      </div>
+      <aside class="game-card">
+        <h3 style="margin-bottom:.75rem">Upgrade lab</h3>
+        <div class="upgrades">
+          <button class="upgrade" data-up="speed" type="button" disabled><strong>⚡ Overdrive · <span id="costSpeed">10</span></strong><small>Move faster</small></button>
+          <button class="upgrade" data-up="fire" type="button" disabled><strong>✦ Twin Shot · <span id="costFire">15</span></strong><small>Fire an extra bolt</small></button>
+          <button class="upgrade" data-up="damage" type="button" disabled><strong>◆ Overcharge · <span id="costDamage">20</span></strong><small>Bolts hit harder</small></button>
+          <button class="upgrade" data-up="shield" type="button" disabled><strong>◇ Shield · <span id="costShield">25</span></strong><small>Absorb one hit</small></button>
+          <button class="upgrade" data-up="magnet" type="button" disabled><strong>◎ Magnet · <span id="costMagnet">18</span></strong><small>Pull shards toward you</small></button>
+        </div>
+        <p class="game-help">Upgrades stay active only for the current run. Waves get faster and denser. Every 5 waves is an elite wave.</p>
+      </aside>
+    </div>
+  </div>
+</section>
+
 <footer><div class="wrap">&copy; <span id="yr"></span> gab</div></footer>
 
 
@@ -261,6 +316,50 @@ document.getElementById('yr').textContent=new Date().getFullYear();
     tm.textContent=fmt(a.currentTime)+(a.duration?' / '+fmt(a.duration):'');
   });
   seek.addEventListener('input',function(){if(a.duration)a.currentTime=seek.value/100*a.duration});
+})();
+
+(function(){
+  const canvas=document.getElementById('gameCanvas'); if(!canvas)return;
+  const c=canvas.getContext('2d'); const W=960,H=600;
+  const scoreEl=document.getElementById('gScore'),waveEl=document.getElementById('gWave'),shardEl=document.getElementById('gShards'),bestEl=document.getElementById('gBest'),status=document.getElementById('gameStatus');
+  const start=document.getElementById('startGame'),pause=document.getElementById('pauseGame'),reset=document.getElementById('resetGame');
+  const costs={speed:10,fire:15,damage:20,shield:25,magnet:18}; const costEls={speed:'costSpeed',fire:'costFire',damage:'costDamage',shield:'costShield',magnet:'costMagnet'};
+  let best=0, state='idle', last=0, raf=0, spawn=0, fireTimer=0, waveTimer=0, score=0, shards=0, wave=1, enemies=[], shots=[], drops=[], particles=[], keys={}, pointer=null;
+  let player={x:W/2,y:H-80,r:15,hp:3,maxHp:3,speed:330,fire:0.34,damage:1,shield:0,magnet:0,shots:1};
+  try{best=Number(localStorage.getItem('voidRunnerBest')||0)}catch(e){} bestEl.textContent=best;
+  function resetRun(){score=0;shards=0;wave=1;enemies=[];shots=[];drops=[];particles=[];spawn=0;fireTimer=0;waveTimer=0;player={x:W/2,y:H-80,r:15,hp:3,maxHp:3,speed:330,fire:0.34,damage:1,shield:0,magnet:0,shots:1}; Object.keys(costs).forEach(k=>{costs[k]={speed:10,fire:15,damage:20,shield:25,magnet:18}[k]}); update(); updateButtons(); draw();}
+  function update(){scoreEl.textContent=Math.floor(score);waveEl.textContent=wave;shardEl.textContent=shards;bestEl.textContent=best;Object.keys(costEls).forEach(k=>document.getElementById(costEls[k]).textContent=costs[k]);}
+  function updateButtons(){document.querySelectorAll('.upgrade').forEach(b=>{b.disabled=state!=='playing'||shards<costs[b.dataset.up]});pause.disabled=state!=='playing'&&state!=='paused';pause.textContent=state==='paused'?'Resume':'Pause';start.textContent=state==='dead'?'Run again':'Start run';}
+  function startRun(){if(state==='playing')return; if(state==='dead'||state==='paused')resetRun();state='playing';status.textContent='RUNNING. Stay alive and spend shards before the next wave.';pause.disabled=false;start.disabled=false;last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(loop);updateButtons();}
+  function endRun(){state='dead';best=Math.max(best,Math.floor(score));try{localStorage.setItem('voidRunnerBest',best)}catch(e){};status.textContent='Run over. You reached wave '+wave+' with '+Math.floor(score)+' points. Hit Run again.';updateButtons();}
+  function burst(x,y,n=8){for(let i=0;i<n;i++){let a=Math.random()*Math.PI*2,s=40+Math.random()*160;particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:.5+Math.random()*.5})}}
+  function spawnEnemy(){let elite=wave%5===0&&Math.random()<.32; let side=Math.random();let x=40+Math.random()*(W-80),y=-30; if(side<.18){x=Math.random()<.5?-30:W+30;y=Math.random()*H*.6} let hp=elite?5+Math.floor(wave/3):1+Math.floor(wave/8);enemies.push({x,y,r:elite?25:13+Math.random()*5,hp,max:hp,vx:(Math.random()-.5)*(35+wave*2),vy:(65+wave*6)*(elite?.72:1),elite});}
+  function shoot(){let count=player.shots,spread=count===1?0:.16;for(let i=0;i<count;i++){let off=(i-(count-1)/2)*spread;shots.push({x:player.x+off*35,y:player.y-18,vx:Math.sin(off)*180,vy:-560,r:4,damage:player.damage});}}
+  function dist2(a,b){let x=a.x-b.x,y=a.y-b.y;return x*x+y*y}
+  function loop(t){if(state!=='playing')return;let dt=Math.min(.033,(t-last)/1000);last=t;step(dt);draw();raf=requestAnimationFrame(loop)}
+  function step(dt){
+    waveTimer+=dt;if(waveTimer>24){wave++;waveTimer=0;score+=wave*50;status.textContent=wave%5===0?'ELITE WAVE '+wave+'!':'Wave '+wave+' started.'}
+    let dx=(keys.ArrowRight||keys.d?1:0)-(keys.ArrowLeft||keys.a?1:0),dy=(keys.ArrowDown||keys.s?1:0)-(keys.ArrowUp||keys.w?1:0); if(dx||dy){let l=Math.hypot(dx,dy);player.x+=dx/l*player.speed*dt;player.y+=dy/l*player.speed*dt} if(pointer){player.x+=(pointer.x-player.x)*Math.min(1,dt*10);player.y+=(pointer.y-player.y)*Math.min(1,dt*10)} player.x=Math.max(player.r,Math.min(W-player.r,player.x));player.y=Math.max(player.r,Math.min(H-player.r,player.y));
+    fireTimer+=dt;if(fireTimer>=player.fire){fireTimer=0;shoot()}
+    spawn+=dt;let rate=Math.max(.18,.82-wave*.018);if(spawn>rate){spawn=0;spawnEnemy();if(wave>8&&Math.random()<.12)spawnEnemy()}
+    shots.forEach(s=>{s.x+=s.vx*dt;s.y+=s.vy*dt});shots=shots.filter(s=>s.y>-30&&s.x>-30&&s.x<W+30);
+    enemies.forEach(e=>{e.x+=e.vx*dt;e.y+=e.vy*dt;if(e.x<e.r||e.x>W-e.r)e.vx*=-1;});
+    for(let i=enemies.length-1;i>=0;i--){let e=enemies[i];let dead=false;for(let j=shots.length-1;j>=0;j--){let s=shots[j];if(dist2(e,s)<(e.r+s.r)**2){e.hp-=s.damage;shots.splice(j,1);burst(s.x,s.y,3);if(e.hp<=0){score+=e.elite?250:30;let n=e.elite?4:1;for(let k=0;k<n;k++)drops.push({x:e.x+(Math.random()-.5)*20,y:e.y+(Math.random()-.5)*20,r:7});dead=true;break}}}if(dead){burst(e.x,e.y,e.elite?22:10);enemies.splice(i,1);continue}if(dist2(e,player)<(e.r+player.r)**2){if(player.shield>0){player.shield--;burst(e.x,e.y,14);enemies.splice(i,1)}else{player.hp--;burst(player.x,player.y,18);enemies.splice(i,1);if(player.hp<=0){endRun();return}}}}
+    drops.forEach(d=>{let dx=player.x-d.x,dy=player.y-d.y,dd=Math.hypot(dx,dy);let range=90+player.magnet*70;if(dd<range){d.x+=dx/dd*260*dt;d.y+=dy/dd*260*dt} });
+    for(let i=drops.length-1;i>=0;i--){if(dist2(drops[i],player)<(drops[i].r+player.r)**2){shards++;score+=10;burst(drops[i].x,drops[i].y,5);drops.splice(i,1)}}
+    particles.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=dt});particles=particles.filter(p=>p.life>0);score+=dt*(2+wave*.45);update();updateButtons();
+  }
+  function draw(){c.clearRect(0,0,W,H);c.fillStyle='#070b13';c.fillRect(0,0,W,H);let g=c.createRadialGradient(player.x,player.y,10,player.x,player.y,500);g.addColorStop(0,'#172744');g.addColorStop(1,'#070b13');c.fillStyle=g;c.fillRect(0,0,W,H);c.strokeStyle='#15243a';c.lineWidth=1;for(let x=0;x<W;x+=48){c.beginPath();c.moveTo(x,0);c.lineTo(x,H);c.stroke()}for(let y=0;y<H;y+=48){c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke()}
+    drops.forEach(d=>{c.fillStyle='#5bb7ff';c.beginPath();c.arc(d.x,d.y,d.r,0,Math.PI*2);c.fill()});shots.forEach(s=>{c.fillStyle='#d8efff';c.fillRect(s.x-2,s.y-10,4,18)});enemies.forEach(e=>{c.fillStyle=e.elite?'#ff7a5c':'#ff4568';c.beginPath();c.arc(e.x,e.y,e.r,0,Math.PI*2);c.fill();c.fillStyle='#270914';c.beginPath();c.arc(e.x,e.y,e.r*.38,0,Math.PI*2);c.fill();if(e.elite){c.strokeStyle='#ffd0c5';c.stroke()}});
+    particles.forEach(p=>{c.globalAlpha=Math.max(0,p.life*1.5);c.fillStyle='#a8d8ff';c.fillRect(p.x-2,p.y-2,4,4)});c.globalAlpha=1;
+    c.save();c.translate(player.x,player.y);c.fillStyle='#75b8ff';c.beginPath();c.moveTo(0,-20);c.lineTo(15,15);c.lineTo(0,9);c.lineTo(-15,15);c.closePath();c.fill();c.fillStyle='#fff';c.beginPath();c.arc(0,-5,4,0,Math.PI*2);c.fill();c.restore();
+    c.fillStyle='#0d1524';c.fillRect(18,18,150,12);c.fillStyle='#5ee38a';c.fillRect(18,18,150*(player.hp/player.maxHp),12);c.fillStyle='#fff';c.font='700 14px system-ui';c.fillText('HP',18,48);c.fillText('SHARDS '+shards,76,48);c.fillText('WAVE '+wave,18,72);
+  }
+  function buy(type){if(state!=='playing'||shards<costs[type])return;shards-=costs[type];if(type==='speed')player.speed+=55;if(type==='fire')player.shots++;if(type==='damage')player.damage++;if(type==='shield')player.shield++;if(type==='magnet')player.magnet++;costs[type]=Math.ceil(costs[type]*1.65);update();updateButtons()}
+  start.addEventListener('click',startRun);reset.addEventListener('click',()=>{state='idle';resetRun();status.textContent='Ready. Start a run and see how far you can push it.';updateButtons()});pause.addEventListener('click',()=>{if(state==='playing'){state='paused';status.textContent='Paused.'}else if(state==='paused'){state='playing';last=performance.now();raf=requestAnimationFrame(loop);status.textContent='Back in.'}updateButtons()});document.querySelectorAll('.upgrade').forEach(b=>b.addEventListener('click',()=>buy(b.dataset.up)));
+  window.addEventListener('keydown',e=>{if(['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName))return;keys[e.key]=true;if(e.key===' '){e.preventDefault();if(state==='playing')pause.click();else if(state==='paused')pause.click();else startRun()}});window.addEventListener('keyup',e=>keys[e.key]=false);
+  function setPointer(e){let r=canvas.getBoundingClientRect();pointer={x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}}canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);setPointer(e)});canvas.addEventListener('pointermove',e=>{if(e.buttons)setPointer(e)});canvas.addEventListener('pointerup',()=>pointer=null);canvas.addEventListener('pointercancel',()=>pointer=null);
+  resetRun();
 })();
 </script>
 </body>
